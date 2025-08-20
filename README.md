@@ -55,6 +55,15 @@ https://www.tutorialspoint.com/assembly_programming/assembly_basic_syntax.htm
 
 https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
 
+## Intro
+In order to understand assembly, three fundamental aspects must be explained:
+- **Instructions** – the actual operations executed by the CPU  
+- **Registers** – the CPU’s working storage  
+- **Labels** – symbolic names for memory addresses
+
+None of these concepts make complete sense without the others, yet only one at a time can be introduced.  
+Therefore, each example will be written as if the other two aspects have already been explained.
+
 ## Instructions
 Data Transfer Instructions (mov, push, pop, xchg, lea, etc.)
 
@@ -85,6 +94,8 @@ System Instructions (syscall, sysret, hlt, cpuid, wrmsr, etc.)
 Floating-Point Instructions (x87 stack-based FPU ops)
 
 SIMD Instructions (MMX, SSE, AVX, AVX-512 categories, each subdivided further)
+
+## Labels (functions et al.)
 
 ## Registers
 Registers are sections of the CPU where information can be stored. On a x86_64 system each register can store 64-bits worth of data. They can be used to directly store information, or as an intermediate step required to transfer data between variables.
