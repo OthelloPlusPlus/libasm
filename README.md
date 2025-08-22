@@ -65,6 +65,173 @@ None of these concepts make complete sense without the others, yet only one at a
 Therefore, each example will be written as if the other two aspects have already been explained.
 
 ## Instructions
+Instructions are given to the processor by the use of **mnemonics**. These keywords are translated into **Opcode**, which are numeric instructions which can be send to the processor. The available **mnemonics**, the **Opcode** they relate to, and the expected syntax _varies per architecture_, but are reasonably consistent for a given manufacturer.
+
+The basic syntax for an instruction is a **mnemonic** followed by an **operand** or a label. Some instructions set Status Flag, which specific instructions can respond to. 
+
+```assembly
+; Instruction
+<mnemonic> <operand>, <operand>
+
+; Example
+add	rdi,	rax
+```
+
+While there are typicaly numerous **instructions** available, and you can expect the manufacturer to provide documentation for them, only a hew handfulls are typically used.
+
+**Data Movement**
+
+Transferring data can be done between two operands, one of which must be a register operand, the other can be either a register operand and a memory operand.
+
+| Mnemonic | Syntax | Status Flag | Description | Use case |
+| :------- | :----- | :---------: | :---------- | :------- |
+| mov      | `mov <dst>, <src>` | ❌ | Overwrites dst with src | Data transfer |
+| movzx    | `movzx <dst>, <src>` | ❌ | Overwrites dst with src, <br>setting remaining bits to 0. | Data transfer from small register to larger register |
+| movsx    | `movsx <dst>, <src>` | ❌ | Overwrites dst with src, <br>setting remaining bits to 0 (positive) or 1 (negative) | Data transfer from small register to larger register, <br> for signed values |
+| xchg     | `xchg <reg1>, <reg2>` | ❌ | Swaps data between two operands | Swapping data |
+| lea      | `lea <dst>, [<mem>]` | ❌ | Copy selected memory address in register | Pointers |
+| push     | `push <register>` | ❌ | Decrements stackpointer `rsp`. <br>Then copies register's data to it | Storing data |
+| pop      | `pop <register>` | ❌ | Copies stack top data to register. <br>Then increments stack pointer `rsp` | Retrieving data |
+
+**Arithmetic**
+
+| Mnemonic | Syntax | Status Flag | Description | Use case |
+| :------- | :----- | :---------: | :---------- | :------- |
+| inc | `inc <register>` | ✅ | Increases registers value by 1 | Counter |
+| dec | `dec <register>` | ✅ | Decreases registers value by 1 | Counter |
+| add | `add <dst>, <src>` | ✅ | Adds value of src to dst | Integer addition |
+| sub | `sub <dst>, <src>` | ✅ | Subtracts the value of src from dst | Integer subtraction |
+| mul | `mul <src>` | ✅ | Multiplies the value stored in `rax` by src storing it in `rdx:rax` | Integer multiplication |
+| imul | `imul <src>`<br>(other syntaxes available) | ✅ | Multiplies the value stored in `rax` by src storing it in `rdx:rax` | Signed Integer multiplication |
+| div | `div <src>` | ❌ | Divides the value stored in `rax` by src<br>The remainder is stored in `rdx` | Integer division |
+| idiv | `idiv <src>` | ❌ | Divides the value stored in `rax` by src<br>The remainder is stored in `rdx` | Signed Integer division |
+
+**Bitwise operations**
+
+Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `xor`. Setting all bits in the destination operand to either true or false depending on the comparison. A simple inversion operation `not` can also be executed swapping true and false. The final 3 comparisons `nand`, `nor`, `xor` (which might not exist for the architecture) combine the basic operations and the inversion into a single instruction. Creating all meaningful possible comparison results.
+
+| Mnemonic | Syntax | Status Flag | Description | Use case |
+| :------- | :----- | :---------: | :---------- | :------- |
+| and | `and <dst>, <src>` | ✅ | Sets true of both bits are true | Masking bits |
+| or | `or <dst>, <src>` | ✅ | Sets true of either bit is true | Bit flags |
+| xor | `xor <dst>, <src>` | ✅ | Sets true of only one bit is true | Toggling bits |
+| not | `not <dst>` | ❌ | Sets true if false | Inverting bits |
+| shl | `shl <dst>, <imm>` | ✅ | Shift bits left | 2^imm |
+| shr | `shr <dst>, <imm>` | ✅ | Shift bits right | 0.5^imm |
+| sar | `sar <dst>, <imm>` | ✅ | Shift bits right<br>Preserving signed bit | 0.5^imm |
+
+<table>
+	<thead>
+		<tr>
+			<th></th>
+			<th>Input</th>
+			<th></th>
+		</tr>
+		<tr>
+			<th><code>&lt;dst&gt;</code></th>
+			<td>11001100</td>
+			<td></td>
+		</tr>
+		<tr>
+			<th><code>&lt;src&gt;</code></th>
+			<td>11110000</td>
+			<td></td>
+		</tr>
+		<tr>
+			<th>Instruction</th>
+			<th>Output</th>
+			<th><code>not &lt;dst&gt;</code></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><code>not &lt;dst&gt;</code></td>
+			<td>00110011</td>
+			<td></td>
+		</tr>
+		<tr><td colspan=3></td></tr>
+		<tr>
+			<td><code>and &lt;dst&gt;, &lt;src&gt;</code></td>
+			<td>11000000</td>
+			<td>00111111 (nand)</td>
+		</tr>
+		<tr>
+			<td><code>or &lt;dst&gt;, &lt;src&gt;</code></td>
+			<td>11111100</td>
+			<td>00000011 (nor)</td>
+		</tr>
+		<tr>
+			<td><code>xor &lt;dst&gt;, &lt;src&gt;</code></td>
+			<td>00111100</td>
+			<td>11000011 (nxor)</td>
+		</tr>
+		<tr>
+			<td><code>xor &lt;dst&gt;, &lt;dst&gt;</code></td>
+			<td>00000000</td>
+			<td>11111111 (nxor)</td>
+		</tr>
+		<tr><td colspan=3></td></tr>
+		<tr>
+			<td><code>shl &lt;dst&gt;, 3;</code></td>
+			<td>01100000</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>shr &lt;dst&gt;, 3;</code></td>
+			<td>00011001</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><code>sar &lt;dst&gt;, 3;</code></td>
+			<td>11111001</td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
+
+**Control Flow**
+
+| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
+| :------- | :----- | :---------: | :------------: | :---------- | :------- |
+| call     | `call <label>` | ❌ | Always | Stores current address in stack. Moves to label. | 'Function' calling |
+| ret      | `ret` | ❌ | Always | Returns to address stored in stack by `call` | Return from 'function' |
+| jmp      | `jmp <label>` | ❌ | Always | Jump to label | while loop |
+
+Conditional jumps using cmp
+| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
+| :------- | :----- | :---------: | :------------: | :---------- | :------- |
+| cmp      | `cmp <src1>, <src2>` | ✅ |  | Executes `sub` without storing result<br>Updates flags OF SF ZF AF PF CF<br>FLAGS 00001000 11010101 | conditions<br>< <= > >= == != |
+| je/jz    | `je <label>`  | ❌ | `ZF=1` | If equal |  if (x == y) |
+| jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
+| jg       | `jg <label>`  | ❌ | `ZF=0 && OF=SF` | If greater than | if (x > y) |
+| jge      | `jge <label>` | ❌ | `OF=SF` | If equal or greater than | if (x >= y) |
+| jl       | `jl <label>`  | ❌ | `ZF=0 && OF!=SF` | If less than | if (x < y) |
+| jle      | `jle <label>` | ❌ | `OF!=SF` | If equal or less than | if (x <= y) |
+| ja       | `ja <label>`  | ❌ | `ZF=0 && CF=0 ` | If greater than | if (x > y), unsigned |
+| jae      | `ja <label>`  | ❌ | `CF=0` | If equal or greater than | if (x >= y), unsigned |
+| jb       | `ja <label>`  | ❌ | `CF=1` | If less than | if (x < y), unsigned |
+| jbe      | `ja <label>`  | ❌ | `ZF=1 \|\| CF=1 ` | If equal or less than | if (x <= y), unsigned |
+
+Conditional jumps using test
+| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
+| :------- | :----- | :---------: | :------------: | :---------- | :------- |
+| test     | `test <src1>, <src2>` | ✅ |  | Executes `and` without storing result<br>Updates flags SF ZF PF<br>FLAGS 00000000 11000100 | Testing bits<br>Boolean checks |
+| je/jz    | `je <label>`  | ❌ | `ZF=1` | If equal |  if (x == y) |
+| jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
+| js       | `js <label>`  | ❌ | `SF=1` | If less than  | if (x < y) |
+| jns      | `jns <label>` | ❌ | `SF=0` | If greater or equal | if (x >= y) |
+
+**Stack manipulation**
+
+| Mnemonic | Syntax | Status Flag | Description | Use case |
+| :------- | :----- | :---------: | :---------- | :------- |
+| enter | `enter, <imm1>, <imm2>` | ✅❌ |  |  |
+| leave | `leave` | ✅❌ |  |  |
+
+
+AI, ID, VIP, VIF, AC, VM, RF | MD, NT, IOPL, OF, DF, IF, TF, SF, ZF, AF, PF, CF
+https://en.wikipedia.org/wiki/FLAGS_register#FLAGS
+
 Data Transfer Instructions (mov, push, pop, xchg, lea, etc.)
 
 Binary Arithmetic Instructions (add, sub, imul, idiv, inc, dec, etc.)
@@ -97,7 +264,14 @@ SIMD Instructions (MMX, SSE, AVX, AVX-512 categories, each subdivided further)
 
 ## Labels (functions et al.)
 
-## Registers
+## Operands
+Three types of operands, each able to contain data:
+- Register operands - data stored in the processor.
+- Memory operands - data stored in memory.
+- Immediate operands - 'hardcoded' data in the running process.
+- I/O operands - access to ports, special cases.
+
+### Registers
 Registers are sections of the CPU where information can be stored. On a x86_64 system each register can store 64-bits worth of data. They can be used to directly store information, or as an intermediate step required to transfer data between variables.
 While in theory all registers can be used to hold any data, there is good practise in place to maintain stability and reliability, preventing unexpected behavior. To this end registers are defined in two type: Caller Saved registers (Scratch) and Callee Saved registers (Preserved), and each register has an intended purpose.
 
