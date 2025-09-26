@@ -181,7 +181,33 @@ Function:
 
 **Testing and Jumping**
 ```assembly
+section	.text
+ControlTest:
+	; Bit test if RAX is 0
+	test	rax,	rax
+	; Jump if RAX is not 0
+	jne	IsNotZero
+	; unconditional jump, reached if RAX is 0
+	jmp ControlCompare
+IsNotZero:
+	; Do something
 
+ControlCompare:
+	; compare the values for RAX and RDI
+	comp	rax,	rdi
+	; if RAX < RDI
+	jl LessThan
+	jg GreaterThan
+	jmp Else
+LessThan:
+	; Do something
+	jmp	Continue
+GreaterThan:
+	; Do something else
+	jmp	Continue
+LessThan:
+	; Do something the last option
+Continue:
 ```
 
 
