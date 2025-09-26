@@ -152,29 +152,22 @@ Function:
 	push	rbp
 	; Store new stack base in base pointer
 	mov		rsp,	rbp
-
 	; Copy RDI and RSI into stack RSP
 	push	rdi
 	push	rsi
-
 	; Read from stack
 	mov	rdi,	[rsp + 8]
 	mov	rsi,	[rsp]
-
 	; Reserve space on stack
 	sub	rsp,	8
-
 	; Free space from stack
 	add	rsp,	8
-
 	; Retrieve and remove data from stack
 	pop	rcx	; was RSI
 	pop	rdx	; was RDI
-
 	; Restore stack
 	mov	rbp,	rsp
 	pop	rbp
-
 	; return function
 	ret
 ```
