@@ -6,7 +6,7 @@
 #    By: ohengelm <ohengelm@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/09/26 18:28:57 by ohengelm          #+#    #+#              #
-#    Updated: 2025/09/26 18:43:57 by ohengelm         ###   ########.fr        #
+#    Updated: 2025/10/01 19:22:24 by ohengelm         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -54,6 +54,7 @@ CFILE_DEMO:=	print_calling_convention.c
 TEST_DIR:=	test/
 
 CFILE_TEST:=	main.c	check_asm_man_in_c_by_copying_file.c	atoi_check.c\
+				strlen_check.c	strcpy_check.c	strcmp_check.c	strdup_check.c\
 				list_check.c	list_check_error.c	list_create.c	list_print.c
 CSRC_TEST=		$(CFILE_TEST:%.c=	$(TEST_DIR)%.c)
 
@@ -63,7 +64,7 @@ AOBJ_TEST=		$(ASRC_TEST:$(TEST_DIR)%.asm=	$(OBJ_DIR)%.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ_DIR) $(OBJ)
 	@${AR} ${ARFLAGS} ${NAME} ${OBJ}
 
 display:
@@ -80,12 +81,15 @@ test: $(NAME) $(AOBJ_TEST)
 		-L . -l${NAME:lib%.a=%} -lm \
 		-o $(EXEC)
 
+$(OBJ_DIR):
+	@mkdir $(OBJ_DIR)
+
 $(OBJ_DIR)%.o: $(TEST_DIR)%.asm
 	@printf	"Compiling %s...\n"	$@
 	@$(CC) $(AFLAGS) $(CFLAGS) $< -o $@
 
 
-demo: $(AOBJ_DEMO) $(COBJ_DEMO)
+demo: $(OBJ_DIR) $(AOBJ_DEMO) $(COBJ_DEMO)
 	@printf	"Linking executable %s...\n"	"$(EXEC)"
 	@ld	$(OBJ_DEMO) \
 		-lc --dynamic-linker /lib64/ld-linux-x86-64.so.2 \
@@ -107,6 +111,7 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME) $(EXEC)
+	@rmdir --ignore-fail-on-non-empty $(OBJ_DIR)
 
 re: clean all
 

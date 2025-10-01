@@ -6,7 +6,7 @@
 /*   By: ohengelm <ohengelm@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/06 18:19:40 by ohengelm          #+#    #+#             */
-/*   Updated: 2025/09/26 17:53:41 by ohengelm         ###   ########.fr       */
+/*   Updated: 2025/10/01 19:45:25 by ohengelm         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,16 @@
 #include <stdio.h>	// printf
 #include <time.h>	// time
 
-void	check_asm_man_in_c_by_copying_file(void);
-void	chech_asm_man_in_asm_by_echoing_stdin(void);
-void	list_check(void);
-void	atoi_check(void);
+void		check_asm_man_in_c_by_copying_file(void);
+void		chech_asm_man_in_asm_by_echoing_stdin(void);
+void		list_check(void);
+void		atoi_check(void);
+void		strlen_check(void);
+void		strcpy_check(void);
+void		strcmp_check(void);
+void		strdup_check(void);
+
+static void	print_header(char *header);
 
 #define C_RESET		"\033[0m"
 #define C_BOLD		"\033[1m"
@@ -32,17 +38,28 @@ void	atoi_check(void);
 int	main(void)
 {
 	srand(time(NULL));
-	printf(C_ORANGE C_BOLD BORDER_LINE"= Mandatory - copy file ="\
-BORDER_LINE C_RESET"\n");
+
+	print_header("Mandatory - strlen");
+	strlen_check();
+	print_header("Mandatory - strcpy");
+	strcpy_check();
+	print_header("Mandatory - strcmp");
+	strcmp_check();
+	print_header("Mandatory - strdup");
+	strdup_check();
+	print_header("Mandatory - copy file");
 	check_asm_man_in_c_by_copying_file();
-	printf(C_ORANGE C_BOLD BORDER_LINE"= Mandatory - echo stdin ="\
-BORDER_LINE C_RESET"\n");
+	print_header("Mandatory - echo stdin");
 	chech_asm_man_in_asm_by_echoing_stdin();
-	printf(C_ORANGE C_BOLD BORDER_LINE"= Bonus - atio ="\
-BORDER_LINE C_RESET"\n");
+	print_header("Bonus - atio");
 	atoi_check();
-	printf(C_ORANGE C_BOLD BORDER_LINE"= Bonus - list ="\
-BORDER_LINE C_RESET"\n");
+	print_header("Bonus - list");
 	list_check();
+
 	return (0);
+}
+
+static void	print_header(char *header)
+{
+	printf(C_ORANGE C_BOLD BORDER_LINE"= %s ="BORDER_LINE C_RESET"\n", header);
 }
