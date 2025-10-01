@@ -81,9 +81,10 @@ The basic syntax for an instruction is a **mnemonic** followed by an **operand**
 add	rdi,	rax
 ```
 
-While there are typicaly _numerous_ **instructions** available, and you can expect the manufacturer to provide documentation for them, only a hew handfulls are typically used.
+While there are typicaly _numerous_ **instructions** available, and you can expect the manufacturer to provide documentation for them, only a few handfulls are typically used.
 
 **Setting register values**
+The ```mov``` instruction is used to set data to a register. While its name pronounced 'move' implies moving data form 1 operand to another, it actually copies and overwrites the information. There are subversions of the instruction such as ```movzx``` and ```movsx```, which are used to maintain data expected output for unsinged and signed numbers respectively.
 ```assembly
 section	.text
 CopyValue:
@@ -100,6 +101,7 @@ CopyValue:
 	mov	RDI,	[rax + 8]
 ```
 
+The ```xchg``` command can be used to swap the values of 2 registers without the need of a third.
 ```assembly
 section	.text
 SwapValues:
@@ -107,13 +109,18 @@ SwapValues:
 	xchg	rdi,	rax
 ```
 
+The ```lea``` can be used to retrieve the address of the operand, effectively dereferencing a pointer.
 ```assembly
+section .data
+	string	db	"lorem ipsum", 0
 section	.text
 Dereference:
 	; Get the address for the litteral string
-	lea	RDI,	[rel string]
+	lea	rdi,	[rel string]
 ```
+
 **Manipulating register values**
+Numerous instructions exist to adjust the values of a register. The most commonly used are displayed below, and they are used for simple mathematical operations, such as incrementing, adding and multiplying. 
 ```assembly
 section	.text
 IncreaseAndDecrease:
@@ -124,14 +131,16 @@ IncreaseAndDecrease:
 	; --RCX
 	dec	rcx
 ```
+
 ```assembly
 section	.text
 AddAndSubtract:
 	; RSP += 8
-	add	rsp,	8
-	; RSP -= 8
 	sub	rsp,	8
+	; RSP -= 8
+	add	rsp,	8
 ```
+
 ```assembly
 section	.text
 MultiplyAndDivide:
@@ -145,6 +154,11 @@ MultiplyAndDivide:
 ```
 
 **Stack manipulation**
+There are several approached to allocated memory for the stack. The ```enter``` and ```leave``` instructions can be used at the start of a functions to claim space on the stack, and restoring it before returning. This can also be done manually by manipulating the stack pointers stored on **RSP** and **RBP** using ```push```, ```pop``` and ```mov``` in a specific order. Through either approach **RSP** and **RBP** use eachother to store their original values, allowing the user to manipulate the stack and, asuming the user doesn't corrupt their values, and restore their values at the end.
+
+Using a combination of ```push``` and ```pop``` or ```sub rsp, 8``` and ```add rsp, 8``` a user can then claim space on the stack and use this space as desired. It can be considered counter-intuitive, but ```sub``` is used to increase the stack size, and ```add``` is used to decrease the stack size. When using the ```push``` and ```pop``` instructions the information is copied to the stack, and retrieved using the 'last in, first out' principle.
+
+It is important to note that some functions assume the stack to be alligned to 16 bytes. When calling such functions while unalined causes segfaults. Each ```push``` is equal to ```sub rsp, 8``` and the user should keep in mind that he should always push an even (% 16) amount before calling other functions.
 ```assembly
 section	.text
 Function:
@@ -172,37 +186,171 @@ Function:
 	ret
 ```
 
-**Testing and Jumping**
+**Bitwise operations**
+
+Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `xor`. Setting all bits in the destination operand to either true or false depending on the comparison. A simple inversion operation `not` can also be executed swapping true and false. The final 3 comparisons `nand`, `nor`, `nxor` (which might not exist for the architecture) combine the basic operations and the inversion into a single instruction. Creating all meaningful possible comparison results.
+
+| Mnemonic | Syntax | Status Flag | Description | Use case |
+| :------- | :----- | :---------: | :---------- | :------- |
+| and | `and <dst>, <src>` | ✅ | Sets true of both bits are true | Masking bits |
+| or | `or <dst>, <src>` | ✅ | Sets true of either bit is true | Bit flags |
+| xor | `xor <dst>, <src>` | ✅ | Sets true of only one bit is true | Toggling bits |
+| not | `not <dst>` | ❌ | Sets true if false | Inverting bits |
+| shl | `shl <dst>, <imm>` | ✅ | Shift bits left | 2^imm |
+| shr | `shr <dst>, <imm>` | ✅ | Shift bits right | 0.5^imm |
+| sar | `sar <dst>, <imm>` | ✅ | Shift bits right<br>Preserving signed bit | 0.5^imm |
+
+<table>
+	<thead>
+		<tr>
+			<th rowspan=2>Instruction</th>
+			<th colspan=5>1 byte register</th>
+		</tr>
+		<tr>
+			<th><code>&lt;dst&gt;, &lt;src&gt;</code><br><code>11111111, 11111111</code></th>
+			<th><code>&lt;dst&gt;, &lt;src&gt;</code><br><code>11111111, 00000000</code></th>
+			<th><code>&lt;dst&gt;, &lt;src&gt;</code><br><code>00000000, 11111111</code></th>
+			<th><code>&lt;dst&gt;, &lt;src&gt;</code><br><code>00000000, 00000000</code></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<th><code>and &lt;dst&gt;, &lt;src&gt;</code><br>Sets true if both bits are true</td>
+			<td>11111111</td>
+			<td>00000000</td>
+			<td>00000000</td>
+			<td>00000000</td>
+		</tr>
+		<tr>
+			<th><code>or &lt;dst&gt;, &lt;src&gt;</code><br>Sets true if either bit is true</td>
+			<td>11111111</td>
+			<td>11111111</td>
+			<td>11111111</td>
+			<td>00000000</td>
+		</tr>
+		<tr>
+			<th><code>xor &lt;dst&gt;, &lt;src&gt;</code><br>Sets true if only one bit is true</td>
+			<td>00000000</td>
+			<td>11111111</td>
+			<td>11111111</td>
+			<td>00000000</td>
+		</tr>
+		<tr>
+			<th></th>
+			<th><code>&lt;dst&gt;</code><br><code>11111111</code></th>
+			<th><code>&lt;dst&gt;</code><br><code>00000000</code></th>
+		</tr>
+		<tr>
+			<th><code>xor &lt;dst&gt;, &lt;dst&gt;</code><br>Sets to 0</td>
+			<td>00000000</td>
+			<td>00000000</td>
+		</tr>
+		<tr>
+			<th><code>not &lt;dst&gt;</code></br>Sets true if bit is false</td>
+			<td>00000000</td>
+			<td>11111111</td>
+		</tr>
+	</tbody>
+</table>
+
+**Jumping and the Status Flag**
+The conditional jump commands read the [Status Flag](https://en.wikipedia.org/wiki/FLAGS_register) for certain flags. If their conditions are met they they can be used to jump to the indicated **label**. The status flags are set by certain **instructions** and combining them with **conditional jumps** and **labels** allow for structures such as **if statements**, **while loops** and **error handling**.
+
+The ```test``` and ```cmp``` **instructions** are specifically designed to set the **Status Flag** flags, however instructions such as the mathematical ```inc```, ```add```, ```imul``` and bitwise instructions can also set them.
+<table>
+	<thead>
+		<tr>
+			<th>Instruction</th>
+			<th>Description</th>
+			<th>Status Flag</th>
+		</tr>
+	</thead>
+	<tbody>
+			<td><code>test &lt;src1&gt;, &lt;src2&gt;</code></td>
+			<td>Used to evaluate whether specific bits are set.<br>Executes the <code>and</code> instructions, without overwriting the src.</td>
+			<td rowspan=2>PF<br>ZF<br>SF</td>
+		</tr>
+		<tr>
+			<td><code>test &lt;src&gt;, &lt;src&gt;</code></td>
+			<td>Used to check for <code>NULL</code><br>Comparing two identical values sets the <a href=https://en.wikipedia.org/wiki/Zero_flag target="_blank">ZF (Zero Flag)</a> if the value is 0.</td>
+		</tr>
+		<tr>
+			<td><code>cmp &lt;src1&gt;, &lt;src2&gt;</code></td>
+			<td>Use to compare values.<br>Executes the <code>sub</code> instructions, without overwriting the src.</td>
+			<td>CF<br>PF<br>AF<br>ZF<br>SF<br>OF</td>
+		</tr>
+	<tr>
+		<td colspan=3>⚠️ Given the same arguments, the instructions <code>cmp</code> and <code>test</code> set different flags. while <code>test</code> is a more efficient instruction, they are <b><u><i>not interchangeable</i></u></b>.</td>
+	</tr>
+	</tbody>
+</table>
+
+**Conditional jump** instructions can read the **Status Flag** and if the required flags are (un)set, then it redirections the process to the instructed **label**
 ```assembly
 section	.text
-ControlTest:
-	; Bit test if RAX is 0
-	test	rax,	rax
-	; Jump if RAX is not 0
-	jne	IsNotZero
-	; unconditional jump, reached if RAX is 0
-	jmp ControlCompare
-IsNotZero:
-	; Do something
+Function:
+	; if (rdi == NULL) return;
+	test	rdi,	rdi
+	jz	.Return
 
-ControlCompare:
-	; compare the values for RAX and RDI
-	comp	rax,	rdi
-	; if RAX < RDI
-	jl LessThan
-	jg GreaterThan
-	jmp Else
-LessThan:
-	; Do something
-	jmp	Continue
-GreaterThan:
-	; Do something else
-	jmp	Continue
-LessThan:
-	; Do something the last option
-Continue:
+; rcx = 0;
+	xor	rcx,	rcx
+
+; while (rcx < 10) ++rcx;
+.WhileLoop:
+	cmp	rcx,	10
+	je	.Break
+	inc	rcx
+	jump	.WhileLoop
+.Break:
+
+.Return:
+	ret
 ```
 
+| Instruction | Status Flag | Description |
+| :---------- | :---------- | :---------- |
+| jmp	   |	    | Unconditional |
+| je/jz    | `ZF=1` | If equal<br><code>if (x == y)</code> |
+| jne/jnz  | `ZF=0` | If not equal<br><code>if (x != y)</code> |
+| jg       | `ZF=0 && OF=SF` | If greater than<br><code>if (x > y)</code> |
+| jge      | `OF=SF` | If equal or greater than<br><code>if (x >= y)</code> |
+| jl       | `ZF=0 && OF!=SF` | If less than<br><code>if (x < y)</code> |
+| jle      | `OF!=SF` | If equal or less than<br><code>if (x <= y)</code> |
+| ja       | `ZF=0 && CF=0 ` | If greater than<br><code>if (x > y),</code> unsigned |
+| jae      | `CF=0` | If equal or greater than<br><code>if (x >= y),</code> unsigned |
+| jb       | `CF=1` | If less than<br><code>if (x < y),</code> unsigned |
+| jbe      | `ZF=1 \|\| CF=1` | If equal or less than<br><code>if (x <= y),</code> unsigned |
+| je/jz    | `ZF=1` | If equal<br><code>if (x == y)</code> |
+| jne/jnz  | `ZF=0` | If not equal<br><code>if (x != y)</code> |
+| js       | `SF=1` | If less than <br><code>if (x < y)</code> |
+| jns      | `SF=0` | If greater or equal<br><code>if (x >= y)</code> |
+
+| jmp      | `jmp <label>` | ❌ | Always | Jump to label | while loop |
+
+Conditional jumps using cmp
+| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
+| :------- | :----- | :---------: | :------------: | :---------- | :------- |
+| cmp      | `cmp <src1>, <src2>` | ✅ |  | Executes `sub` without storing result<br>Updates flags OF SF ZF AF PF CF<br>FLAGS 00001000 11010101 | conditions<br>< <= > >= == != |
+| je/jz    | `je <label>`  | ❌ | `ZF=1` | If equal |  if (x == y) |
+| jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
+| jg       | `jg <label>`  | ❌ | `ZF=0 && OF=SF` | If greater than | if (x > y) |
+| jge      | `jge <label>` | ❌ | `OF=SF` | If equal or greater than | if (x >= y) |
+| jl       | `jl <label>`  | ❌ | `ZF=0 && OF!=SF` | If less than | if (x < y) |
+| jle      | `jle <label>` | ❌ | `OF!=SF` | If equal or less than | if (x <= y) |
+| ja       | `ja <label>`  | ❌ | `ZF=0 && CF=0 ` | If greater than | if (x > y), unsigned |
+| jae      | `ja <label>`  | ❌ | `CF=0` | If equal or greater than | if (x >= y), unsigned |
+| jb       | `ja <label>`  | ❌ | `CF=1` | If less than | if (x < y), unsigned |
+| jbe      | `ja <label>`  | ❌ | `ZF=1 \|\| CF=1 ` | If equal or less than | if (x <= y), unsigned |
+
+Conditional jumps using test
+| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
+| :------- | :----- | :---------: | :------------: | :---------- | :------- |
+| test     | `test <src1>, <src2>` | ✅ |  | Executes `and` without storing result<br>Updates flags SF ZF PF<br>FLAGS 00000000 11000100 | Testing bits<br>Boolean checks |
+| je/jz    | `je <label>`  | ❌ | `ZF=1` | If equal |  if (x == y) |
+| jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
+| js       | `js <label>`  | ❌ | `SF=1` | If less than  | if (x < y) |
+| jns      | `jns <label>` | ❌ | `SF=0` | If greater or equal | if (x >= y) |
 
 
 
