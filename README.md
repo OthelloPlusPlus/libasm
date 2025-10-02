@@ -79,8 +79,6 @@ https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
 <summary><b>Instructions</b> - Instructions for operations to be by the processor.
 </summary>
 
-### Instructions
-
 Instructions are given to the processor by the use of **mnemonics**. These keywords are translated into **Opcode**, which are numeric instructions which can be send to the processor. The available **mnemonics**, the **Opcode** they relate to, and the expected syntax _varies per architecture_, but are reasonably consistent for a given manufacturer.
 
 The basic syntax for an instruction is a **mnemonic** followed by an **operand** or a label. Some instructions set Status Flag, which specific instructions can respond to. 
