@@ -34,7 +34,7 @@ Unlike higher level languages the syntax involves giving direct commands to the 
 Modern compilers, such as gcc, convert higher languages into a compatible assembly syntax before making and linking object files. This project however is only compatible for [x86_64](https://en.wikipedia.org/wiki/X86-64) architecture and is compiled using [nasm](Makefile#L74) and [stored in an archive](Makefile#L67). When executing functions without the use of of a more modern compiler the files must be manually linked together, this is done via [ld](Makefile#L90).
 
 ## Basic Structure
-The syntax for the assembly language is divided into five aspects.
+The syntax for the assembly language is divided into four aspects.
 - **Sections** - Different regions of a file, which specify how the syntax should be interpreted and where data should be stored.
 - **Instructions** - Instructions for operations to be by the processor.
 - **Registers** - The CPU's working storage.
@@ -42,16 +42,13 @@ The syntax for the assembly language is divided into five aspects.
 - **Labels** - Symbolic names for memory addresses.
 
 These aspects of assembly are so interdependant, that explaining one must assume the other aspects are understood.
-
----
 <details name=segment>
-	<summary>	
-		
-# $${\color{orange}\text{Sections}}$$
+<summary>
+	
+### Sections
 Different regions of a file, which specify how the syntax should be interpreted and where data is stored.
 </summary>
 
-### Sections
 <table>
   <thead>
     <tr><th colspan=2>Sections</th></tr>
@@ -77,10 +74,10 @@ https://www.tutorialspoint.com/assembly_programming/assembly_basic_syntax.htm
 
 https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
 
-</details>
-
-<details open name=segment>
-<summary><b>Instructions</b> - Instructions for operations to be by the processor.</summary>
+<a name="instructions"></a>
+</details><details name=segment>
+<summary><b>Instructions</b> - Instructions for operations to be by the processor.
+</summary>
 
 ### Instructions
 
@@ -100,8 +97,8 @@ While there are typicaly _numerous_ **instructions** available, and you can expe
 
 ---
 
-<details><summary><b>Setting register values</b></summary>
-	
+<details><summary>$${\color{orange}\text{Setting register values}}$$</summary>
+
 The ```mov``` instruction is used to set data to a register. While its name pronounced 'move' implies moving data form 1 operand to another, it actually copies and overwrites the information. There are subversions of the instruction such as ```movzx``` and ```movsx```, which are used to maintain data expected output for unsinged and signed numbers respectively.
 ```assembly
 section	.text
@@ -138,8 +135,7 @@ Dereference:
 ```
 </details>
 
-
-<details><summary><b>Manipulating register values</b></summary>
+<details><summary>$${\color{orange}\text{Manipulating register values}}$$</summary>
 
 Numerous instructions exist to adjust the values of a register. The most commonly used are displayed below, and they are used for simple mathematical operations, such as incrementing, adding and multiplying. 
 ```assembly
@@ -175,8 +171,7 @@ MultiplyAndDivide:
 ```
 </details>
 
-
-<details><summary><b>Stack manipulation</b></summary>
+<details><summary>$${\color{orange}\text{Stack manipulation}}$$</summary>
 
 There are several approached to allocated memory for the stack. The ```enter``` and ```leave``` instructions can be used at the start of a functions to claim space on the stack, and restoring it before returning. This can also be done manually by manipulating the stack pointers stored on **RSP** and **RBP** using ```push```, ```pop``` and ```mov``` in a specific order. Through either approach **RSP** and **RBP** use eachother to store their original values, allowing the user to manipulate the stack and, asuming the user doesn't corrupt their values, and restore their values at the end.
 
@@ -211,8 +206,7 @@ Function:
 ```
 </details>
 
-
-<details><summary><b>Bitwise operations</b></summary>
+<details><summary>$${\color{orange}\text{Bitwise operations}}$$</summary>
 
 Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `xor`. Setting all bits in the destination operand to either true or false depending on the comparison. A simple inversion operation `not` can also be executed swapping true and false. The final 3 comparisons `nand`, `nor`, `nxor` (which might not exist for the architecture) combine the basic operations and the inversion into a single instruction. Creating all meaningful possible comparison results.
 
@@ -280,7 +274,7 @@ Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `x
 </table>
 </details>
 
-<details><summary><b>Jumping and the Status Flag</b></summary>
+<details><summary>$${\color{orange}\text{Jumping and the Status Flag}}$$</summary>
 
 The conditional jump commands read the [Status Flag](https://en.wikipedia.org/wiki/FLAGS_register) for certain flags. If their conditions are met they they can be used to jump to the indicated **label**. The status flags are set by certain **instructions** and combining them with **conditional jumps** and **labels** allow for structures such as **if statements**, **while loops** and **error handling**.
 
@@ -462,8 +456,6 @@ Function:
 </table>
 
 </details>
-
----
 
 </details>
 
