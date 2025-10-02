@@ -35,19 +35,11 @@ Modern compilers, such as gcc, convert higher languages into a compatible assemb
 
 ## Basic Structure
 The syntax for the assembly language is divided into four aspects.
-- **Sections** - Different regions of a file, which specify how the syntax should be interpreted and where data should be stored.
-- **Instructions** - Instructions for operations to be by the processor.
-- **Registers** - The CPU's working storage.
-- **Memory** - Storage outside of the CPU. Including the stack.
-- **Labels** - Symbolic names for memory addresses.
-
 These aspects of assembly are so interdependant, that explaining one must assume the other aspects are understood.
+
 <details name=segment>
-<summary>
-	
-### Sections
-Different regions of a file, which specify how the syntax should be interpreted and where data is stored.
-</summary>
+<summary><b>Sections</b> - Different regions of a file, which specify how the syntax should be interpreted and where data is stored.</summary>
+<a name="sections"></a>
 
 <table>
   <thead>
@@ -74,9 +66,12 @@ https://www.tutorialspoint.com/assembly_programming/assembly_basic_syntax.htm
 
 https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
 
-</details><details name=segment>
+---
+</details>
+
+<details name=segment>
 <summary><b>Instructions</b> - Instructions for operations to be by the processor.</summary>
-<a name="findthisspot"></a>
+<a name="instructions"></a>
 
 Instructions are given to the processor by the use of **mnemonics**. These keywords are translated into **Opcode**, which are numeric instructions which can be send to the processor. The available **mnemonics**, the **Opcode** they relate to, and the expected syntax _varies per architecture_, but are reasonably consistent for a given manufacturer.
 
@@ -91,8 +86,6 @@ add	rdi,	rax
 ```
 
 While there are typicaly _numerous_ **instructions** available, and you can expect the manufacturer to provide documentation for them, only a few handfulls are typically used.
-
----
 
 <details><summary>$${\color{orange}\text{Setting register values}}$$</summary>
 
@@ -454,10 +447,13 @@ Function:
 
 </details>
 
+---
 </details>
 
-<details open name=segment>
-<summary><b>Storage Classes</b> – Storing runtime data</summary>
+<details name=segment>
+<summary><b>Storage Classes</b> - Storing runtime data</summary>
+<a name="storage_classes"></a>
+
 Storage classes are the different locations where a program can store information during execution.
 
 - **Registers** – CPU-internal storage, fastest access.
@@ -466,7 +462,7 @@ Storage classes are the different locations where a program can store informatio
 </details>
 
 
-<details open name=segment>
+<details name=segment>
 <summary><b>Registers</b> - The CPU's working storage.</summary>
 
 ### Registers
@@ -809,18 +805,20 @@ Any information stored in a Scratch register is allowed to be altered by any fun
 
 When a function alters a Preserved register, it must restore the register before returning to another function. Each function may expect the Preserved register between calls of sub-functions. 
 A notable Preserved register is `rsp` (using `rbp` to maintain and store temporary states), which is used to store larger chunks of information. `rsp` is often referred to as 'the stack'.
+
+---
 </details>
 
-<details open name=segment>
+<!-- </details><details name=segment>
 <summary><b>Memory</b> - Storage outside of the CPU. Including the stack.</summary>
+<a name="memory"></a>
 
-### Memory
-</details>
+</details> -->
 
-<details open name=segment>
+</details><details name=segment>
 <summary><b>Labels</b> - Symbolic names for memory addresses.</summary>
+<a name="labels"></a>
 
-### Labels
 Labels in assembly are symbolic names for memory addresses. They are used to define locations in the code base to move around between. Accessing labels can be done in 3 ways:
 - **Process Flow** - Labels are passed over by the instruction flow.
 - **Jumps** - Continue process at the specified jump. Jump statements can be conditional and can be reconised by their `j**` syntax.
@@ -866,9 +864,8 @@ False:
 	; Do something else
 EndIf:
 ```
-</details>
-
 ---
+</details>
 
 ## Calling Convention
 When making function calls there is a convention as to which registers are used. While in a custom function this has little effects. When calling library functions however, it defines the order by with arguments are sent. The actual registers vary by processor, and thus the calling convention must be adjusted to the appropriate processor. For the current x86_64 system the calling convention in order of arguments passed is `RDI` => `RSI` => `RDX` => `RCX` => `R8` => `R9` => The Stack. For the return value `RAX` is used.
@@ -947,244 +944,11 @@ function:
 	ret
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<details><summary>Old</summary>
-
-**Data Movement**
-
-Transferring data can be done between two operands, one of which must be a register operand, the other can be either a register operand and a memory operand.
-
-| Mnemonic | Syntax | Status Flag | Description | Use case |
-| :------- | :----- | :---------: | :---------- | :------- |
-| mov      | `mov <dst>, <src>` | ❌ | Overwrites dst with src | Data transfer |
-| movzx    | `movzx <dst>, <src>` | ❌ | Overwrites dst with src, <br>setting remaining bits to 0. | Data transfer from small register to larger register |
-| movsx    | `movsx <dst>, <src>` | ❌ | Overwrites dst with src, <br>setting remaining bits to 0 (positive) or 1 (negative) | Data transfer from small register to larger register, <br> for signed values |
-| xchg     | `xchg <reg1>, <reg2>` | ❌ | Swaps data between two operands | Swapping data |
-| lea      | `lea <dst>, [<mem>]` | ❌ | Copy selected memory address in register | Pointers |
-| push     | `push <register>` | ❌ | Decrements stackpointer `rsp`. <br>Then copies register's data to it | Storing data |
-| pop      | `pop <register>` | ❌ | Copies stack top data to register. <br>Then increments stack pointer `rsp` | Retrieving data |
-
-**Arithmetic**
-
-| Mnemonic | Syntax | Status Flag | Description | Use case |
-| :------- | :----- | :---------: | :---------- | :------- |
-| inc | `inc <register>` | ✅ | Increases registers value by 1 | Counter |
-| dec | `dec <register>` | ✅ | Decreases registers value by 1 | Counter |
-| add | `add <dst>, <src>` | ✅ | Adds value of src to dst | Integer addition |
-| sub | `sub <dst>, <src>` | ✅ | Subtracts the value of src from dst | Integer subtraction |
-| mul | `mul <src>` | ✅ | Multiplies the value stored in `rax` by src storing it in `rdx:rax` | Integer multiplication |
-| imul | `imul <src>`<br>(other syntaxes available) | ✅ | Multiplies the value stored in `rax` by src storing it in `rdx:rax` | Signed Integer multiplication |
-| div | `div <src>` | ❌ | Divides the value stored in `rax` by src<br>The remainder is stored in `rdx` | Integer division |
-| idiv | `idiv <src>` | ❌ | Divides the value stored in `rax` by src<br>The remainder is stored in `rdx` | Signed Integer division |
-
-**Bitwise operations**
-
-Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `xor`. Setting all bits in the destination operand to either true or false depending on the comparison. A simple inversion operation `not` can also be executed swapping true and false. The final 3 comparisons `nand`, `nor`, `xor` (which might not exist for the architecture) combine the basic operations and the inversion into a single instruction. Creating all meaningful possible comparison results.
-
-| Mnemonic | Syntax | Status Flag | Description | Use case |
-| :------- | :----- | :---------: | :---------- | :------- |
-| and | `and <dst>, <src>` | ✅ | Sets true of both bits are true | Masking bits |
-| or | `or <dst>, <src>` | ✅ | Sets true of either bit is true | Bit flags |
-| xor | `xor <dst>, <src>` | ✅ | Sets true of only one bit is true | Toggling bits |
-| not | `not <dst>` | ❌ | Sets true if false | Inverting bits |
-| shl | `shl <dst>, <imm>` | ✅ | Shift bits left | 2^imm |
-| shr | `shr <dst>, <imm>` | ✅ | Shift bits right | 0.5^imm |
-| sar | `sar <dst>, <imm>` | ✅ | Shift bits right<br>Preserving signed bit | 0.5^imm |
-
-<table>
-	<thead>
-		<tr>
-			<th></th>
-			<th>Input</th>
-			<th></th>
-		</tr>
-		<tr>
-			<th><code>&lt;dst&gt;</code></th>
-			<td>11001100</td>
-			<td></td>
-		</tr>
-		<tr>
-			<th><code>&lt;src&gt;</code></th>
-			<td>11110000</td>
-			<td></td>
-		</tr>
-		<tr>
-			<th>Instruction</th>
-			<th>Output</th>
-			<th><code>not &lt;dst&gt;</code></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td><code>not &lt;dst&gt;</code></td>
-			<td>00110011</td>
-			<td></td>
-		</tr>
-		<tr><td colspan=3></td></tr>
-		<tr>
-			<td><code>and &lt;dst&gt;, &lt;src&gt;</code></td>
-			<td>11000000</td>
-			<td>00111111 (nand)</td>
-		</tr>
-		<tr>
-			<td><code>or &lt;dst&gt;, &lt;src&gt;</code></td>
-			<td>11111100</td>
-			<td>00000011 (nor)</td>
-		</tr>
-		<tr>
-			<td><code>xor &lt;dst&gt;, &lt;src&gt;</code></td>
-			<td>00111100</td>
-			<td>11000011 (nxor)</td>
-		</tr>
-		<tr>
-			<td><code>xor &lt;dst&gt;, &lt;dst&gt;</code></td>
-			<td>00000000</td>
-			<td>11111111 (nxor)</td>
-		</tr>
-		<tr><td colspan=3></td></tr>
-		<tr>
-			<td><code>shl &lt;dst&gt;, 3;</code></td>
-			<td>01100000</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><code>shr &lt;dst&gt;, 3;</code></td>
-			<td>00011001</td>
-			<td></td>
-		</tr>
-		<tr>
-			<td><code>sar &lt;dst&gt;, 3;</code></td>
-			<td>11111001</td>
-			<td></td>
-		</tr>
-	</tbody>
-</table>
-
-**Control Flow**
-
-| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
-| :------- | :----- | :---------: | :------------: | :---------- | :------- |
-| call     | `call <label>` | ❌ | Always | Stores current address in stack. Moves to label. | 'Function' calling |
-| ret      | `ret` | ❌ | Always | Returns to address stored in stack by `call` | Return from 'function' |
-| jmp      | `jmp <label>` | ❌ | Always | Jump to label | while loop |
-
-Conditional jumps using cmp
-| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
-| :------- | :----- | :---------: | :------------: | :---------- | :------- |
-| cmp      | `cmp <src1>, <src2>` | ✅ |  | Executes `sub` without storing result<br>Updates flags OF SF ZF AF PF CF<br>FLAGS 00001000 11010101 | conditions<br>< <= > >= == != |
-| je/jz    | `je <label>`  | ❌ | `ZF=1` | If equal |  if (x == y) |
-| jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
-| jg       | `jg <label>`  | ❌ | `ZF=0 && OF=SF` | If greater than | if (x > y) |
-| jge      | `jge <label>` | ❌ | `OF=SF` | If equal or greater than | if (x >= y) |
-| jl       | `jl <label>`  | ❌ | `ZF=0 && OF!=SF` | If less than | if (x < y) |
-| jle      | `jle <label>` | ❌ | `OF!=SF` | If equal or less than | if (x <= y) |
-| ja       | `ja <label>`  | ❌ | `ZF=0 && CF=0 ` | If greater than | if (x > y), unsigned |
-| jae      | `ja <label>`  | ❌ | `CF=0` | If equal or greater than | if (x >= y), unsigned |
-| jb       | `ja <label>`  | ❌ | `CF=1` | If less than | if (x < y), unsigned |
-| jbe      | `ja <label>`  | ❌ | `ZF=1 \|\| CF=1 ` | If equal or less than | if (x <= y), unsigned |
-
-Conditional jumps using test
-| Mnemonic | Syntax | Status Flag | Jump condition | Description | Use case |
-| :------- | :----- | :---------: | :------------: | :---------- | :------- |
-| test     | `test <src1>, <src2>` | ✅ |  | Executes `and` without storing result<br>Updates flags SF ZF PF<br>FLAGS 00000000 11000100 | Testing bits<br>Boolean checks |
-| je/jz    | `je <label>`  | ❌ | `ZF=1` | If equal |  if (x == y) |
-| jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
-| js       | `js <label>`  | ❌ | `SF=1` | If less than  | if (x < y) |
-| jns      | `jns <label>` | ❌ | `SF=0` | If greater or equal | if (x >= y) |
-
-**Stack manipulation**
-
-| Mnemonic | Syntax | Status Flag | Description | Use case |
-| :------- | :----- | :---------: | :---------- | :------- |
-| enter | `enter, <imm1>, <imm2>` | ✅❌ |  |  |
-| leave | `leave` | ✅❌ |  |  |
-
-
-AI, ID, VIP, VIF, AC, VM, RF | MD, NT, IOPL, OF, DF, IF, TF, SF, ZF, AF, PF, CF
-https://en.wikipedia.org/wiki/FLAGS_register#FLAGS
-
-Data Transfer Instructions (mov, push, pop, xchg, lea, etc.)
-
-Binary Arithmetic Instructions (add, sub, imul, idiv, inc, dec, etc.)
-
-Decimal Arithmetic Instructions (older BCD ops, rarely used today)
-
-Logical Instructions (and, or, xor, not, shl, shr, etc.)
-
-Shift and Rotate Instructions (shl, shr, rol, ror, etc.)
-
-Bit and Byte Instructions (bt, bts, setcc, test, etc.)
-
-Control Transfer Instructions (jmp, call, ret, conditional jumps, loop, etc.)
-
-String Instructions (movs, cmps, scas, stos, lods, with rep prefixes)
-
-Input/Output Instructions (in, out)
-
-Flag Control Instructions (stc, clc, cmc, lahf, sahf, pushf, popf, etc.)
-
-Segment Register Instructions (lds, les, lfs, lgs, lss)
-
-Miscellaneous Instructions (nop, lea, xlat, etc.)
-
-System Instructions (syscall, sysret, hlt, cpuid, wrmsr, etc.)
-
-Floating-Point Instructions (x87 stack-based FPU ops)
-
-SIMD Instructions (MMX, SSE, AVX, AVX-512 categories, each subdivided further)
-
-
-### Registers
-
-### Memory
-
-
-### Labels
-
-
-## Operands
-Three types of operands, each able to contain data:
-- Register operands - data stored in the processor.
-- Memory operands - data stored in memory.
-- Immediate operands - 'hardcoded' data in the running process.
-- I/O operands - access to ports, special cases.
-
-### Calling Convention
-
-
-https://www.cs.uaf.edu/2017/fall/cs301/lecture/09_11_registers.html
-
-## Syscall
-https://syscall.sh/
-
-## Comparisons
-
-
-## Conditional jumps
-https://www.philadelphia.edu.jo/academics/qhamarsheh/uploads/Lecture%2018%20Conditional%20Jumps%20Instructions.pdf
-
-</details>
-
 # Sources
 https://www.nasm.us/xdoc/2.16.03/html/nasmdoc0.html
 
 https://syscall.sh/
+
+https://www.cs.uaf.edu/2017/fall/cs301/lecture/09_11_registers.html
+
+https://www.philadelphia.edu.jo/academics/qhamarsheh/uploads/Lecture%2018%20Conditional%20Jumps%20Instructions.pdf
