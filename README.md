@@ -40,13 +40,13 @@ The syntax for the assembly language is divided into five aspects.
 - **Memory** - Storage outside of the CPU. Including the stack.
 - **Labels** - Symbolic names for memory addresses.
 
-These aspects of assembly are so interdependant, that explaining one must asume the other aspects are understood.
+These aspects of assembly are so interdependant, that explaining one must assume the other aspects are understood.
 
-<details><summary>
-
-## Sections
+<details name=aspect><summary>
+<b>Sections</b> - Different regions of a file, which specify how the syntac should be interpreted and where data should be stored.</summary>
+	
+### Sections
 </summary>
-
 <table>
   <thead>
     <tr><th colspan=2>Sections</th></tr>
@@ -72,9 +72,13 @@ https://www.tutorialspoint.com/assembly_programming/assembly_basic_syntax.htm
 
 https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
 
+---
 </details>
 
+<details open name=segment><summary><b>Instructions</b> - Instructions for operations to be by the processor.</summary>
+	
 ### Instructions
+
 Instructions are given to the processor by the use of **mnemonics**. These keywords are translated into **Opcode**, which are numeric instructions which can be send to the processor. The available **mnemonics**, the **Opcode** they relate to, and the expected syntax _varies per architecture_, but are reasonably consistent for a given manufacturer.
 
 The basic syntax for an instruction is a **mnemonic** followed by an **operand** or a label. Some instructions set Status Flag, which specific instructions can respond to. 
@@ -89,7 +93,8 @@ add	rdi,	rax
 
 While there are typicaly _numerous_ **instructions** available, and you can expect the manufacturer to provide documentation for them, only a few handfulls are typically used.
 
-**Setting register values**
+<details><summary><b>Setting register values</b></summary>
+	
 The ```mov``` instruction is used to set data to a register. While its name pronounced 'move' implies moving data form 1 operand to another, it actually copies and overwrites the information. There are subversions of the instruction such as ```movzx``` and ```movsx```, which are used to maintain data expected output for unsinged and signed numbers respectively.
 ```assembly
 section	.text
@@ -124,8 +129,11 @@ Dereference:
 	; Get the address for the litteral string
 	lea	rdi,	[rel string]
 ```
+</details>
 
-**Manipulating register values**
+
+<details><summary><b>Manipulating register values</b></summary>
+
 Numerous instructions exist to adjust the values of a register. The most commonly used are displayed below, and they are used for simple mathematical operations, such as incrementing, adding and multiplying. 
 ```assembly
 section	.text
@@ -158,8 +166,11 @@ MultiplyAndDivide:
 	; RDX /= RAX
 	idiv	rdx,	rax
 ```
+</details>
 
-**Stack manipulation**
+
+<details><summary><b>Stack manipulation</b></summary>
+
 There are several approached to allocated memory for the stack. The ```enter``` and ```leave``` instructions can be used at the start of a functions to claim space on the stack, and restoring it before returning. This can also be done manually by manipulating the stack pointers stored on **RSP** and **RBP** using ```push```, ```pop``` and ```mov``` in a specific order. Through either approach **RSP** and **RBP** use eachother to store their original values, allowing the user to manipulate the stack and, asuming the user doesn't corrupt their values, and restore their values at the end.
 
 Using a combination of ```push``` and ```pop``` or ```sub rsp, 8``` and ```add rsp, 8``` a user can then claim space on the stack and use this space as desired. It can be considered counter-intuitive, but ```sub``` is used to increase the stack size, and ```add``` is used to decrease the stack size. When using the ```push``` and ```pop``` instructions the information is copied to the stack, and retrieved using the 'last in, first out' principle.
@@ -191,8 +202,10 @@ Function:
 	; return function
 	ret
 ```
+</details>
 
-**Bitwise operations**
+
+<details><summary><b>Bitwise operations</b></summary>
 
 Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `xor`. Setting all bits in the destination operand to either true or false depending on the comparison. A simple inversion operation `not` can also be executed swapping true and false. The final 3 comparisons `nand`, `nor`, `nxor` (which might not exist for the architecture) combine the basic operations and the inversion into a single instruction. Creating all meaningful possible comparison results.
 
@@ -258,8 +271,10 @@ Comparing bits and storing the results have 3 basic comparisons: `and`, `or`, `x
 		</tr>
 	</tbody>
 </table>
+</details>
 
-**Jumping and the Status Flag**
+<details><summary><b>Jumping and the Status Flag</b></summary>
+
 The conditional jump commands read the [Status Flag](https://en.wikipedia.org/wiki/FLAGS_register) for certain flags. If their conditions are met they they can be used to jump to the indicated **label**. The status flags are set by certain **instructions** and combining them with **conditional jumps** and **labels** allow for structures such as **if statements**, **while loops** and **error handling**.
 
 The ```test``` and ```cmp``` **instructions** are specifically designed to set the **Status Flag** flags, however instructions such as the mathematical ```inc```, ```add```, ```imul``` and bitwise instructions can also set them.
@@ -357,6 +372,27 @@ Conditional jumps using test
 | jne/jnz  | `jne <label>` | ❌ | `ZF=0` | If not equal | if (x != y) |
 | js       | `js <label>`  | ❌ | `SF=1` | If less than  | if (x < y) |
 | jns      | `jns <label>` | ❌ | `SF=0` | If greater or equal | if (x >= y) |
+</details>
+
+</details>
+
+<details open name=segment><summary>
+
+### Registers
+</summary>
+</details>
+
+<details open name=segment><summary>
+
+### Memory
+</summary>
+</details>
+
+<details open name=segment><summary>
+
+### Labels
+</summary>
+</details>
 
 
 
@@ -381,8 +417,7 @@ Conditional jumps using test
 
 
 
-
-
+<details><summary>Old</summary>
 
 **Data Movement**
 
@@ -1053,6 +1088,8 @@ https://syscall.sh/
 
 ## Conditional jumps
 https://www.philadelphia.edu.jo/academics/qhamarsheh/uploads/Lecture%2018%20Conditional%20Jumps%20Instructions.pdf
+
+</details>
 
 # Sources
 https://www.nasm.us/xdoc/2.16.03/html/nasmdoc0.html
