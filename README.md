@@ -50,6 +50,8 @@ These aspects of assembly are so interdependant, that explaining one must assume
 # $${\color{orange}\text{Sections}}$$
 Different regions of a file, which specify how the syntax should be interpreted and where data is stored.
 </summary>
+
+### Sections
 <table>
   <thead>
     <tr><th colspan=2>Sections</th></tr>
