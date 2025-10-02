@@ -13,7 +13,7 @@ Unlike higher level languages the syntax involves giving direct commands to the 
     <tr>
 	  <th>Syntax</th>
 	  <th>Compiler</th>
-	  <th>Fle Extention</th>
+	  <th>File Extention</th>
 	</tr>
   </thead>
   <tbody>
@@ -42,7 +42,11 @@ The syntax for the assembly language is divided into five aspects.
 
 These aspects of assembly are so interdependant, that explaining one must asume the other aspects are understood.
 
-### Sections
+<details><summary>
+
+## Sections
+</summary>
+
 <table>
   <thead>
     <tr><th colspan=2>Sections</th></tr>
@@ -67,6 +71,8 @@ These aspects of assembly are so interdependant, that explaining one must asume 
 https://www.tutorialspoint.com/assembly_programming/assembly_basic_syntax.htm
 
 https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
+
+</details>
 
 ### Instructions
 Instructions are given to the processor by the use of **mnemonics**. These keywords are translated into **Opcode**, which are numeric instructions which can be send to the processor. The available **mnemonics**, the **Opcode** they relate to, and the expected syntax _varies per architecture_, but are reasonably consistent for a given manufacturer.
