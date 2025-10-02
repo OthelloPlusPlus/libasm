@@ -74,10 +74,9 @@ https://www.tutorialspoint.com/assembly_programming/assembly_basic_syntax.htm
 
 https://www.cs.yale.edu/flint/cs421/papers/x86-asm/asm.html
 
-<a name="findthisspot"></a>
 </details><details name=segment>
-<summary><b>Instructions</b> - Instructions for operations to be by the processor.
-</summary>
+<summary><b>Instructions</b> - Instructions for operations to be by the processor.</summary>
+<a name="findthisspot"></a>
 
 Instructions are given to the processor by the use of **mnemonics**. These keywords are translated into **Opcode**, which are numeric instructions which can be send to the processor. The available **mnemonics**, the **Opcode** they relate to, and the expected syntax _varies per architecture_, but are reasonably consistent for a given manufacturer.
 
