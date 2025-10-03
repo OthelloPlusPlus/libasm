@@ -501,13 +501,8 @@ Storage classes are the different locations where a program can store informatio
 - **Registers** – CPU-internal storage, fastest access.
 - **Data Segment** – global/static variables stored in `.data`, `.bss`, or `.rodata`.
 - **Stack/Heap Memory** – dynamic or local memory managed at runtime.
-</details>
 
-
-<details name=segment>
-<summary><b>Registers</b> - The CPU's working storage.</summary>
-
-### Registers
+<details><summary>$${\color{orange}\text{Registers}}$$</summary>
 Registers are sections of the CPU where information can be stored. On a x86_64 system each register can store 64-bits worth of data. They can be used to directly store information, or as an intermediate step required to transfer data between variables.
 While in theory all registers can be used to hold any data, there is good practise in place to maintain stability and reliability, preventing unexpected behavior. To this end registers are defined in two type: Caller Saved registers (Scratch) and Callee Saved registers (Preserved), and each register has an intended purpose.
 
@@ -847,6 +842,8 @@ Any information stored in a Scratch register is allowed to be altered by any fun
 
 When a function alters a Preserved register, it must restore the register before returning to another function. Each function may expect the Preserved register between calls of sub-functions. 
 A notable Preserved register is `rsp` (using `rbp` to maintain and store temporary states), which is used to store larger chunks of information. `rsp` is often referred to as 'the stack'.
+
+</details>
 
 ---
 </details>
